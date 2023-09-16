@@ -6,7 +6,8 @@ const App = () => {
   const [alltodos, setAlltodos] = useState([])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [completed,setCompleted]=useState([])
+  const [completed, setCompleted] = useState([])
+  const [isCompleted, setIscompleted] = useState('0')
 
   function titleChange(e) {
     setTitle(e.target.value)
@@ -27,27 +28,49 @@ const App = () => {
     localStorage.setItem('Todo', JSON.stringify(updatedTodoArr))
   }
 
- const handleDelete=(index)=>{
-  let reducedTodo=[...alltodos]
-  reducedTodo.splice(index)
-  localStorage.setItem('Todo',JSON.stringify(reducedTodo))
-  setAlltodos(reducedTodo)
+  const handleDelete = (index) => {
+    let reducedTodo = [...alltodos]
+    reducedTodo.splice(index, 1)
+    setAlltodos(reducedTodo)
+    localStorage.setItem('Todo', JSON.stringify(reducedTodo))
   }
 
-  const handleCheck=(index)=>{
-      let filteredItem={
-        ...alltodos[index]
-      }
-      let completedTodo=[...completed]
-      completedTodo.push(filteredItem)
-      localStorage.setItem("completed",JSON.stringify(completedTodo))
-      setCompleted(completedTodo)
+  const handleCheck = (index) => {
+    let filteredItem = {
+      ...alltodos[index],
+    }
+    let completedTodo = [...completed]
+    completedTodo.push(filteredItem)
+    localStorage.setItem('completed', JSON.stringify(completedTodo))
+    setCompleted(completedTodo)
+
+    let reducedTodocompleted = [...alltodos]
+    reducedTodocompleted.splice(index, 1)
+    setAlltodos(reducedTodocompleted)
+    localStorage.setItem('Todo', JSON.stringify(reducedTodocompleted))
   }
 
-  
+  function handlerisCompleted() {
+    setIscompleted('1')
+  }
+  console.log(isCompleted)
+
+  function handletodos() {
+    setIscompleted('0')
+  }
+
+  const handleCompletedDelete = (index) => {
+    let removecompleted = [...completed]
+    removecompleted.splice(index, 1)
+    setCompleted(removecompleted)
+    localStorage.setItem('completed', JSON.stringify(removecompleted))
+  }
+
   useEffect(() => {
     const todo = JSON.parse(localStorage.getItem('Todo'))
     setAlltodos(todo || [])
+    const completedtodo = JSON.parse(localStorage.getItem('completed'))
+    setCompleted(completedtodo || [])
   }, [])
 
   return (
@@ -96,38 +119,73 @@ const App = () => {
 
           <div className=' flex flex-col mt-5 ml-5 w-[90%] sm:h-[40%] vvsm:h-[25%]'>
             <div className=' flex gap-[10px] h-[40%]'>
-              <button className='bg-[#252525]  sm:w-[100px] sm:h-[40px] vvsm:w-[50px] vvsm:h-[40px] text-[#ffff] font-mono font-semibold rounded-full hover:bg-green-300'>
+              <button
+                onClick={handletodos}
+                className='bg-[#252525]  sm:w-[100px] sm:h-[40px] vvsm:w-[50px] vvsm:h-[40px] text-[#ffff] font-mono font-semibold rounded-full hover:bg-green-300'
+              >
                 ToDo
               </button>
-              <button className='bg-[#252525] sm:w-[100px] sm:h-[40px] vvsm:w-[100px] vvsm:h-[40px]  text-[#ffff] font-mono font-semibold rounded-full hover:bg-green-300'>
+              <button
+                onClick={handlerisCompleted}
+                className='bg-[#252525] sm:w-[100px] sm:h-[40px] vvsm:w-[100px] vvsm:h-[40px]  text-[#ffff] font-mono font-semibold rounded-full hover:bg-green-300'
+              >
                 Completed
               </button>
             </div>
 
             {/* todo item */}
 
-            {alltodos.map((element,index) => (
-              <div className='bg-[#252525] flex justify-center items-center w-[90%] sm:h-[100px] vvsm:h-[60px] sm:mt-[10px] vvsm:mt-[20px] rounded'>
-                <div className='w-[70%]  h-full flex flex-col '>
-                  <div className='w-[100%] h-[50%] font-serif font-semibold sm:text-[22px] ml-[30px] text-[#ffff]'>
-                    {element.title}
+            {isCompleted === '0' &&
+              alltodos.map((element, index) => (
+                <div className='bg-[#252525] flex justify-center items-center w-[90%] sm:h-[100px] vvsm:h-[60px] sm:mt-[10px] vvsm:mt-[20px] rounded'>
+                  <div className='w-[70%]  h-full flex flex-col '>
+                    <div className='w-[100%] h-[50%] font-serif font-semibold sm:text-[22px] ml-[30px] text-[#ffff]'>
+                      {element.title}
+                    </div>
+                    <div className='w-[100%] h-[50%] ml-[20px] text-[15px] text-[#ffff]'>
+                      {element.description}
+                    </div>
                   </div>
-                  <div className='w-[100%] h-[50%] ml-[20px] text-[15px] text-[#ffff]'>
-                    {element.description}
+                  <div className=' flex justify-center items-center w-[15%] h-full '>
+                    <button
+                      style={{ color: 'white' }}
+                      onClick={() => handleDelete(index)}
+                    >
+                      <DeleteSweepIcon />
+                    </button>
+                  </div>
+                  <div className=' flex justify-center items-center w-[15%] h-full '>
+                    <button
+                      style={{ color: 'white' }}
+                      onClick={() => handleCheck(index)}
+                    >
+                      <CheckIcon />
+                    </button>
                   </div>
                 </div>
-                <div className=' flex justify-center items-center w-[15%] h-full '>
-                  <button style={{ color: 'white' }} onClick={()=>handleDelete(index)}>
-                    <DeleteSweepIcon/>
-                  </button>
+              ))}
+
+            {isCompleted === '1' &&
+              completed.map((single, index) => (
+                <div className='bg-[#252525] flex justify-center items-center w-[90%] sm:h-[100px] vvsm:h-[60px] sm:mt-[10px] vvsm:mt-[20px] rounded'>
+                  <div className='w-[70%]  h-full flex flex-col '>
+                    <div className='w-[100%] h-[50%] font-serif font-semibold sm:text-[22px] ml-[30px] text-[#ffff]'>
+                      {single.title}
+                    </div>
+                    <div className='w-[100%] h-[50%] ml-[20px] text-[15px] text-[#ffff]'>
+                      {single.description}
+                    </div>
+                  </div>
+                  <div className=' flex justify-center items-center w-[15%] h-full '>
+                    <button
+                      style={{ color: 'white' }}
+                      onClick={() => handleCompletedDelete(index)}
+                    >
+                      <DeleteSweepIcon />
+                    </button>
+                  </div>
                 </div>
-                <div className=' flex justify-center items-center w-[15%] h-full '>
-                  <button style={{ color: 'white' }} onClick={()=>handleCheck(index)}>
-                    <CheckIcon />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </div>
