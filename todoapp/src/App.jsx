@@ -17,15 +17,24 @@ const App = () => {
   }
 
   const handleAllTodo = () => {
-    let newTodoItem = {
-      title: title,
-      description: description,
+
+    if(title.trim()=='' && description.trim()==''){
+      return 
     }
+
+      let newTodoItem = {
+        title: title,
+        description: description,
+      }
+    
 
     let updatedTodoArr = [...alltodos]
     updatedTodoArr.push(newTodoItem)
     setAlltodos(updatedTodoArr)
     localStorage.setItem('Todo', JSON.stringify(updatedTodoArr))
+
+    setTitle('')
+    setDescription('')
   }
 
   const handleDelete = (index) => {
@@ -53,7 +62,6 @@ const App = () => {
   function handlerisCompleted() {
     setIscompleted('1')
   }
-  console.log(isCompleted)
 
   function handletodos() {
     setIscompleted('0')
@@ -165,7 +173,8 @@ const App = () => {
                 </div>
               ))}
 
-            {isCompleted === '1' &&
+            {isCompleted === '1' &&  
+            
               completed.map((single, index) => (
                 <div className='bg-[#252525] flex justify-center items-center w-[90%] sm:h-[100px] vvsm:h-[60px] sm:mt-[10px] vvsm:mt-[20px] rounded'>
                   <div className='w-[70%]  h-full flex flex-col '>
